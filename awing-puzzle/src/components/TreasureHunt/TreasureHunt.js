@@ -10,7 +10,6 @@ import {
   Alert,
 } from '@mui/material';
 import TreasureForm from './TreasureForm';
-import TreasureSolution from './TreasureSolution';
 import TreasureHistory from './TreasureHistory';
 import apiService from '../../services/api';
 
@@ -41,9 +40,8 @@ function TreasureHunt() {
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [solution, setSolution] = useState(null);
+  const [result, setResult] = useState(null);
   const [savedPuzzles, setSavedPuzzles] = useState([]);
-  const [selectedPuzzleId, setSelectedPuzzleId] = useState(null);
   const [currentPuzzle, setCurrentPuzzle] = useState(null);
 
   // Fetch saved puzzles on component mount
@@ -53,7 +51,7 @@ function TreasureHunt() {
         const puzzles = await apiService.getAllPuzzles();
         setSavedPuzzles(puzzles);
       } catch (error) {
-        setError('Failed to load saved puzzles. Please try again later.');
+        setError('Failed to load history.');
       }
     };
     fetchPuzzles();
@@ -71,16 +69,16 @@ function TreasureHunt() {
       const savedPuzzle = await apiService.savePuzzle(puzzleData);
       
       // Then solve it
-      const result = await apiService.solvePuzzle(puzzleData);
+      const numberResult = await apiService.solvePuzzle(puzzleData);
       
-      setSolution(result);
+      setResult(numberResult);
       setCurrentPuzzle(savedPuzzle);
       
       // Refresh the list of saved puzzles
       const puzzles = await apiService.getAllPuzzles();
       setSavedPuzzles(puzzles);
       
-      // Switch to the solution tab
+      // Switch to the history tab
       setTabValue(1);
     } catch (error) {
       setError('Error solving the puzzle. Please check your input and try again.');
@@ -98,11 +96,11 @@ function TreasureHunt() {
       setCurrentPuzzle(puzzle);
       
       // Solve the loaded puzzle
-      const result = await apiService.solvePuzzle(puzzle);
-      setSolution(result);
+      const numberResult = await apiService.solvePuzzle(puzzle);
+      setResult(numberResult);
       
-      // Switch to the solution tab
-      setTabValue(1);
+      // Switch to form tab to show the loaded puzzle
+      setTabValue(0);
     } catch (error) {
       setError('Error loading the puzzle. Please try again.');
       console.error(error);
@@ -126,7 +124,6 @@ function TreasureHunt() {
             centered
           >
             <Tab label="Input" {...a11yProps(0)} />
-            <Tab label="Solution" {...a11yProps(1)} disabled={!solution} />
             <Tab label="History" {...a11yProps(2)} />
           </Tabs>
         </Box>
@@ -147,19 +144,12 @@ function TreasureHunt() {
           <TreasureForm
             onSolve={handleSolvePuzzle}
             currentPuzzle={currentPuzzle}
+            result={result}
           />
         </TabPanel>
 
-        <TabPanel value={tabValue} index={1}>
-          {solution && (
-            <TreasureSolution 
-              solution={solution}
-              puzzle={currentPuzzle}
-            />
-          )}
-        </TabPanel>
 
-        <TabPanel value={tabValue} index={2}>
+        <TabPanel value={tabValue} index={1}>
           <TreasureHistory 
             puzzles={savedPuzzles} 
             onLoad={handleLoadPuzzle}

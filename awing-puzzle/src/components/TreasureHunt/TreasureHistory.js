@@ -101,10 +101,10 @@ function TreasureHistory({ puzzles = [], onLoad }) {
                           ))}
                         </Box>
                       </Grid>
-                      {puzzle.solution && (
+                      {puzzle.result !== undefined && (
                         <Grid item xs={12}>
                           <Typography variant="body2">
-                            Minimum Fuel: <strong>{puzzle.solution.minFuel?.toFixed(2) || 'N/A'}</strong>
+                            Result: <strong>{puzzle.result}</strong>
                           </Typography>
                         </Grid>
                       )}

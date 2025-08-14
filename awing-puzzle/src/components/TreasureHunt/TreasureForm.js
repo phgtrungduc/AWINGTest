@@ -6,11 +6,11 @@ import {
   Grid,
   Typography,
   Paper,
-  FormHelperText,
   FormControl,
+  Alert,
 } from '@mui/material';
 
-function TreasureForm({ onSolve, currentPuzzle }) {
+function TreasureForm({ onSolve, currentPuzzle, result }) {
   const [dimensions, setDimensions] = useState({
     n: '',
     m: '',
@@ -35,7 +35,7 @@ function TreasureForm({ onSolve, currentPuzzle }) {
       const newErrors = Array(parseInt(n)).fill().map(() => Array(parseInt(m)).fill(''));
       setErrors(prev => ({ ...prev, matrix: newErrors }));
     }
-  }, [dimensions.n, dimensions.m]);
+  }, [dimensions]);
 
   // Load current puzzle if available
   useEffect(() => {
@@ -188,6 +188,8 @@ function TreasureForm({ onSolve, currentPuzzle }) {
 
     // Convert to numeric values
     const numericMatrix = matrix.map(row => row.map(cell => parseInt(cell)));
+
+    console.log(numericMatrix);
     
     // Call the onSolve callback with the puzzle data
     onSolve({
@@ -280,7 +282,7 @@ function TreasureForm({ onSolve, currentPuzzle }) {
                       variant="outlined"
                       error={!!errors.matrix?.[rowIndex]?.[colIndex]}
                       helperText={errors.matrix?.[rowIndex]?.[colIndex] || ''}
-                      inputProps={{ 
+                      htmlInput={{ 
                         style: { textAlign: 'center', padding: '8px 4px' },
                         inputMode: 'numeric'
                       }}
@@ -291,6 +293,14 @@ function TreasureForm({ onSolve, currentPuzzle }) {
             </Box>
           </Paper>
         </>
+      )}
+
+      {result !== null && (
+        <Alert severity="success" sx={{ mt: 4, mb: 2 }}>
+          <Typography variant="h6">
+            Result: {result}
+          </Typography>
+        </Alert>
       )}
 
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
