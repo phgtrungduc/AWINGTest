@@ -1,0 +1,6 @@
+@AWP_HostAddress = http://localhost:5075
+
+GET {{AWP_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

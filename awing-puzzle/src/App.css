@@ -1,0 +1,60 @@
+/* App.css - Global styles for the Treasure Hunt application */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  text-align: center;
+}
+
+/* Matrix styling */
+.matrix-cell {
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.matrix-cell.start {
+  background-color: #bbdefb;
+}
+
+.matrix-cell.treasure {
+  background-color: #ffd700;
+}
+
+.matrix-cell.path {
+  background-color: #c8e6c9;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .matrix-cell {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+}
