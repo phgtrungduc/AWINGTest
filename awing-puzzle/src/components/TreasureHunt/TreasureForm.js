@@ -298,7 +298,7 @@ function TreasureForm({ onSolve, currentPuzzle, result }) {
       {result !== null && (
         <Alert severity="success" sx={{ mt: 4, mb: 2 }}>
           <Typography variant="h6">
-            Minimum Fuel Required: {result.MinimumFuel !== undefined ? result.MinimumFuel.toFixed(2) : ''}
+            Minimum Fuel Required: {result.MinimumFuel !== undefined ? result.MinimumFuel.toFixed(6) : ''}
           </Typography>
           {result.PuzzleId && (
             <Typography variant="body1" sx={{ mt: 1 }}>

@@ -4,11 +4,6 @@ using AWP.Business.Models;
 using AWP.DBContext.Models;
 using AWP.Repository.DTO;
 using AWP.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AWP.Business.BusinessLayer
 {
@@ -67,46 +62,40 @@ namespace AWP.Business.BusinessLayer
 
         public ServiceResult ValidateTreasureHunt(TreasureHuntInputDTO input)
         {
-            var result = new ServiceResult { StatusCode = 200 };
+            var result = new ServiceResult { StatusCode = 400 };
 
             if (input == null)
             {
-				result.StatusCode = 400;
 				result.Message = "Input data cannot be null";
                 return result;
             }
 
             if (input.Matrix == null)
             {
-				result.StatusCode = 400;
 				result.Message = "Matrix cannot be null";
                 return result;
             }
 
             if (input.Rows <= 0 || input.Rows > 500)
             {
-                result.StatusCode = 400;
                 result.Message = "Number of rows must be between 1 and 500";
                 return result;
             }
 
             if (input.Columns <= 0 || input.Columns > 500)
             {
-                result.StatusCode = 400;
                 result.Message = "Number of columns must be between 1 and 500";
                 return result;
             }
 
             if (input.MaxTarget <= 0 || input.MaxTarget > input.Rows * input.Columns)
             {
-                result.StatusCode = 400;
                 result.Message = $"Maximum target value must be between 1 and {input.Rows * input.Columns}";
                 return result;
             }
 
             if (input.Matrix.GetLength(0) != input.Rows || input.Matrix.GetLength(1) != input.Columns)
             {
-                result.StatusCode = 400;
                 result.Message = "Matrix dimensions do not match the provided rows and columns";
                 return result;
             }
@@ -118,7 +107,6 @@ namespace AWP.Business.BusinessLayer
                 {
                     if (input.Matrix[i, j] < 1 || input.Matrix[i, j] > input.MaxTarget)
                     {
-                        result.StatusCode = 400;
                         result.Message = $"Matrix value at position [{i},{j}] is outside the valid range (1 to {input.MaxTarget})";
                         return result;
                     }
@@ -132,10 +120,11 @@ namespace AWP.Business.BusinessLayer
 
             if (!foundMaxTarget)
             {
-                result.StatusCode = 400;
                 result.Message = $"Matrix must contain exactly one cell with value {input.MaxTarget}";
                 return result;
             }
+
+            result.StatusCode = 200;
 
             return result;
         }
@@ -154,71 +143,97 @@ namespace AWP.Business.BusinessLayer
             var p = input.MaxTarget;
             var matrix = input.Matrix;
 
-            var chestPositions = new Dictionary<int, (int row, int col)>();
+            var chestPositions = new Dictionary<int, List<(int row, int col)>>();
 
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < m; j++)
                 {
                     int chestNumber = matrix[i, j];
-                    chestPositions[chestNumber] = (i, j);
+                    if (!chestPositions.ContainsKey(chestNumber))
+                    {
+                        chestPositions[chestNumber] = new List<(int row, int col)>();
+                    }
+                    chestPositions[chestNumber].Add((i, j));
                 }
             }
 
-            int currentKey = 0;
-            double totalFuel = 0;
-            var path = new List<TreasureHuntStep>();
-            
-            var currentPosition = (row: 0, col: 0);
-            
-            path.Add(new TreasureHuntStep
-            {
-                ChestNumber = 0,
-                Row = 1, // Converting to 1-indexed for output
-                Column = 1,
-                FuelUsed = 0
-            });
+            var startPosition = (row: 0, col: 0);
+            double minFuel = FindOptimalPath(chestPositions, p, startPosition);
 
-            while (currentKey < p)
-            {
-                int nextKey = currentKey + 1;
-                
-                // Find position of the next chest
-                if (!chestPositions.TryGetValue(nextKey, out var nextPosition))
-                {
-                    throw new Exception($"Chest with number {nextKey} not found in the matrix.");
-                }
-
-                double fuel = CalculateFuel(currentPosition, nextPosition);
-                totalFuel += fuel;
-
-                currentPosition = nextPosition;
-                currentKey = nextKey;
-
-                path.Add(new TreasureHuntStep
-                {
-                    ChestNumber = nextKey,
-                    Row = currentPosition.row + 1, 
-                    Column = currentPosition.col + 1,
-                    FuelUsed = fuel
-                });
-            }
-
-            result.MinimumFuel = totalFuel;
-            //result.Path = path;
+            result.MinimumFuel = minFuel;
             
             return result;
         }
 
-        /// <summary>
-        /// Calculates fuel needed to move between two positions
-        /// </summary>
         private double CalculateFuel((int row, int col) from, (int row, int col) to)
         {
-            // Using the formula: sqrt((x1-x2)^2 + (y1-y2)^2)
             double dx = from.row - to.row;
             double dy = from.col - to.col;
             return Math.Sqrt(dx * dx + dy * dy);
+        }
+
+        private double FindOptimalPath(
+            Dictionary<int, List<(int row, int col)>> chestPositions, 
+            int maxTarget,
+            (int row, int col) startPosition)
+        {
+            var memo = new Dictionary<string, double>();
+
+            var path = new Dictionary<int, (int row, int col)>();
+            
+            var res = OptimalPathRecursive(0, startPosition, chestPositions, maxTarget, memo, path);
+
+            foreach (var step in path)
+            {
+                Console.WriteLine($"Chest {step.Key} at ({step.Value.row}, {step.Value.col})");
+            }
+
+            return res;
+		}
+
+        private double OptimalPathRecursive(
+            int currentKey,
+            (int row, int col) currentPosition,
+            Dictionary<int, List<(int row, int col)>> chestPositions,
+            int maxTarget,
+            Dictionary<string, double> memo,
+            Dictionary<int, (int row, int col)> path)
+        {
+            if (currentKey == maxTarget)
+            {
+                return 0;
+            }
+
+            string key = $"{currentKey}_{currentPosition.row}_{currentPosition.col}";
+            if (memo.ContainsKey(key))
+            {
+                return memo[key];
+            }
+
+            int nextKey = currentKey + 1;
+            if (!chestPositions.TryGetValue(nextKey, out var nextPositions) || !nextPositions.Any())
+            {
+                throw new Exception($"Chest with number {nextKey} not found in the matrix.");
+            }
+
+            double minTotalFuel = double.MaxValue;
+
+            foreach (var nextPosition in nextPositions)
+            {
+                double fuelToNext = CalculateFuel(currentPosition, nextPosition);
+                double remainingFuel = OptimalPathRecursive(nextKey, nextPosition, chestPositions, maxTarget, memo, path);
+                
+                double totalFuel = fuelToNext + remainingFuel;
+                if (totalFuel < minTotalFuel)
+                {
+                    path[nextKey] = nextPosition;
+                    minTotalFuel = totalFuel;
+                }
+            }
+
+            memo[key] = minTotalFuel;
+            return minTotalFuel;
         }
     }
 }

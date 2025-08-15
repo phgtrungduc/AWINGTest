@@ -57,17 +57,6 @@ function TreasureHistory({ puzzles = [], onLoad }) {
                   primary={`Puzzle ${index + 1} (${puzzle.n}x${puzzle.m}, p=${puzzle.p})`}
                   secondary={puzzle.createdAt ? `Created: ${formatDate(puzzle.createdAt)}` : 'No date'}
                 />
-                <ListItemSecondaryAction>
-                  <Tooltip title="Load and solve this puzzle">
-                    <IconButton 
-                      edge="end" 
-                      aria-label="load" 
-                      onClick={() => onLoad(puzzle.id)}
-                    >
-                      <PlayIcon color="primary" />
-                    </IconButton>
-                  </Tooltip>
-                </ListItemSecondaryAction>
               </ListItem>
               <Box sx={{ px: 2, pb: 2 }}>
                 <Card variant="outlined">

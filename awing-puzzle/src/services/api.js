@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-// Define base URL for API
-const API_URL = 'https://localhost:7009/api'; // Change this to match your backend URL
+// fix cứng cho nhanh đỡ phải .env
+const API_URL = 'https://localhost:7009/api'; 
 
-// Create axios instance with base URL
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
@@ -21,7 +20,7 @@ const apiService = {
       const puzzleMapDto = response.data;
       return {
         n: puzzleMapDto.Row,
-        m: puzzleMapDto.Column,
+        m: puzzleMapDto.Columnn,
         p: puzzleMapDto.MaxTarget,
         matrix: JSON.parse(puzzleMapDto.Matrix),
         id: puzzleMapDto.Id,
@@ -39,7 +38,7 @@ const apiService = {
       const response = await apiClient.get('/puzzlemap/list');
       return response.data.map(puzzleMapDto => ({
         n: puzzleMapDto.Row,
-        m: puzzleMapDto.Column,
+        m: puzzleMapDto.Columnn,
         p: puzzleMapDto.MaxTarget,
         matrix: JSON.parse(puzzleMapDto.Matrix),
         id: puzzleMapDto.Id,
@@ -57,7 +56,7 @@ const apiService = {
     try {
       const input = {
         rows: puzzleData.n,
-        columns: puzzleData.m,
+        s: puzzleData.m,
         maxTarget: puzzleData.p,
         matrix: puzzleData.matrix
       };

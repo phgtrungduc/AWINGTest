@@ -21,7 +21,6 @@ namespace AWP.Controllers
             _businessPuzzleMap = businessPuzzleMap;
         }
 
-        // Base CRUD operations are inherited from BaseController
 
         [HttpGet("list")]
         public ActionResult<IEnumerable<PuzzleMapDTO>> GetList()
@@ -34,16 +33,13 @@ namespace AWP.Controllers
         {
             try
             {
-                // Basic input validation
                 if (input == null)
                 {
                     return BadRequest("Input data cannot be null");
                 }
 
-                // Solve the treasure hunt problem (validation is now handled inside the business layer)
                 var result = _businessPuzzleMap.SolveTreasureHunt(input);
 
-                // Save the puzzle to database
                 var puzzleMapDto = new PuzzleMapDTO
                 {
                     Id = Guid.NewGuid(),
