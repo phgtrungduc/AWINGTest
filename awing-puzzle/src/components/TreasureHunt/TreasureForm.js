@@ -218,7 +218,7 @@ function TreasureForm({ onSolve, currentPuzzle, result }) {
               fullWidth
               error={!!errors.n}
               helperText={errors.n || 'Enter a value between 1 and 500'}
-              inputProps={{ inputMode: 'numeric', pattern: '[1-9][0-9]*' }}
+              htmlInput={{ inputMode: 'numeric', pattern: '[1-9][0-9]*' }}
             />
           </FormControl>
         </Grid>
@@ -234,7 +234,7 @@ function TreasureForm({ onSolve, currentPuzzle, result }) {
               fullWidth
               error={!!errors.m}
               helperText={errors.m || 'Enter a value between 1 and 500'}
-              inputProps={{ inputMode: 'numeric', pattern: '[1-9][0-9]*' }}
+              htmlInput={{ inputMode: 'numeric', pattern: '[1-9][0-9]*' }}
             />
           </FormControl>
         </Grid>
@@ -250,7 +250,7 @@ function TreasureForm({ onSolve, currentPuzzle, result }) {
               fullWidth
               error={!!errors.p}
               helperText={errors.p || 'Enter a value between 1 and n*m'}
-              inputProps={{ inputMode: 'numeric', pattern: '[1-9][0-9]*' }}
+              htmlInput={{ inputMode: 'numeric', pattern: '[1-9][0-9]*' }}
             />
           </FormControl>
         </Grid>
@@ -298,8 +298,13 @@ function TreasureForm({ onSolve, currentPuzzle, result }) {
       {result !== null && (
         <Alert severity="success" sx={{ mt: 4, mb: 2 }}>
           <Typography variant="h6">
-            Result: {result}
+            Minimum Fuel Required: {result.MinimumFuel !== undefined ? result.MinimumFuel.toFixed(2) : ''}
           </Typography>
+          {result.PuzzleId && (
+            <Typography variant="body1" sx={{ mt: 1 }}>
+              Puzzle ID: {result.PuzzleId}
+            </Typography>
+          )}
         </Alert>
       )}
 

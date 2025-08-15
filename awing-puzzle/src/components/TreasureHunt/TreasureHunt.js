@@ -65,21 +65,26 @@ function TreasureHunt() {
     setLoading(true);
     setError(null);
     try {
-      // Save the puzzle first
-      const savedPuzzle = await apiService.savePuzzle(puzzleData);
+      // Solve the puzzle (the API will save it automatically)
+      const result = await apiService.solvePuzzle(puzzleData);
       
-      // Then solve it
-      const numberResult = await apiService.solvePuzzle(puzzleData);
+      setResult(result);
       
-      setResult(numberResult);
-      setCurrentPuzzle(savedPuzzle);
+      // Convert the input data to a puzzle object for display
+      const puzzle = {
+        n: puzzleData.n,
+        m: puzzleData.m,
+        p: puzzleData.p,
+        matrix: puzzleData.matrix,
+        id: result.puzzleId
+      };
+      setCurrentPuzzle(puzzle);
       
       // Refresh the list of saved puzzles
       const puzzles = await apiService.getAllPuzzles();
       setSavedPuzzles(puzzles);
       
-      // Switch to the history tab
-      setTabValue(1);
+      // Stay on the current tab to show the result
     } catch (error) {
       setError('Error solving the puzzle. Please check your input and try again.');
       console.error(error);
@@ -95,9 +100,12 @@ function TreasureHunt() {
       const puzzle = await apiService.getPuzzle(id);
       setCurrentPuzzle(puzzle);
       
-      // Solve the loaded puzzle
-      const numberResult = await apiService.solvePuzzle(puzzle);
-      setResult(numberResult);
+      // Create a result object from the saved result
+      const result = {
+        minimumFuel: puzzle.result,
+        puzzleId: puzzle.id
+      };
+      setResult(result);
       
       // Switch to form tab to show the loaded puzzle
       setTabValue(0);

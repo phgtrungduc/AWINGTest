@@ -15,5 +15,7 @@ public partial class PuzzleMap
 
     public string Matrix { get; set; } = null!;
 
+    public double? Result { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 }

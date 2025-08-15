@@ -1,3 +1,4 @@
+using AWP.Business.Models;
 using AWP.DBContext.Models;
 using AWP.Repository.DTO;
 using System;
@@ -13,5 +14,9 @@ namespace AWP.Business.Interfaces
         // Add any specific methods for PuzzleMap business layer here
         IEnumerable<PuzzleMapDTO> GetByRowAndColumn(int row, int column);
         IEnumerable<PuzzleMapDTO> GetByMaxTarget(int maxTarget);
+        
+        // Treasure hunt methods
+        ServiceResult ValidateTreasureHunt(TreasureHuntInputDTO input);
+        TreasureHuntResultDTO SolveTreasureHunt(TreasureHuntInputDTO input);
     }
 }

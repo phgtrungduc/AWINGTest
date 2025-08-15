@@ -13,6 +13,7 @@ namespace AWP.Repository.DTO
         public int Columnn { get; set; }
         public int MaxTarget { get; set; }
         public string Matrix { get; set; } = null!;
+        public double? Result { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 }
